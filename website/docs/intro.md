@@ -2,46 +2,29 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# What is Advent of Hardcaml
 
-Let's discover **Docusaurus in less than 5 minutes**.
+**Advent of Hardcaml** is a programming challenge which combines two rather difficult programming challenges:
 
-## Getting Started
+1. Advent of Code
+2. Hardcaml
 
-Get started by **creating a new site**.
+This challenge is hosted by [Jane Street](https://blog.janestreet.com/advent-of-fpga-challenge-2025/), a quant firm. And knowing these "quanters", I'm expecting this challenge to be new and esoteric to me.
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+## Advent of Code
 
-### What you'll need
+[Advent of Code](https://adventofcode.com/), created by [Eric Wastl](https://was.tl/) is a yearly series of puzzles set during the season of Advent.
 
-- [Node.js](https://nodejs.org/en/download/) version 20.0 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## Hardcaml
 
-## Generate a new site
+[Hardcaml](https://github.com/janestreet/hardcaml) is a library for OCaml that facilitates the creation and simulation of hardware designs.
 
-Generate a new Docusaurus site using the **classic template**.
+Jane Street is known to invest heavily in the OCaml and Hardcaml workflow, and they're even the ones who maintain Hardcaml.
+Thankfully, they have one of their guys actively participating in this challenge as well, so there'll be a lot of learning from his repository.
 
-The classic template will automatically be added to your project after you run the command:
+## My Grindset
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+Since I don't have much planned over this Christmas break,
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
-
-The command also installs all necessary dependencies you need to run Docusaurus.
-
-## Start your site
-
-Run the development server:
-
-```bash
-cd my-website
-npm run start
-```
-
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
-
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
-
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+Using this website, I'll try to document what I've researched.
+Hopefully, by the end of this challenge, you too could learn a thing or two about hardware design.

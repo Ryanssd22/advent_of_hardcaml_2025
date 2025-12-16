@@ -17,9 +17,15 @@ slorber:
   image_url: https://github.com/slorber.png
   page:
     # customize the url of the author page at /blog/authors/<permalink>
-    permalink: '/all-sebastien-lorber-articles'
+    permalink: "/all-sebastien-lorber-articles"
   socials:
     x: sebastienlorber
     linkedin: sebastienlorber
     github: slorber
     newsletter: https://thisweekinreact.com
+
+ryan:
+  name: Ryan Simeon
+  title: Author
+  url: https://github.com/ryanssd22
+  image_url: https://github.com/ryanssd22.png

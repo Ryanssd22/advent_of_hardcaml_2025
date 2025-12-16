@@ -1,9 +1,7 @@
 ---
 slug: testing
 title: Hello World
-authors:
-    - name: Ryan Simeon
-    title: Author
+authors: [ryan]
 tags: [greetings]
 ---
 
