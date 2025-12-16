@@ -10,7 +10,7 @@ import { themes as prismThemes } from "prism-react-renderer";
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
-  title: "Advent of Hardcaml",
+  title: "Advent of Hardcaml 2025",
   tagline: "'Tis the season to Hardcaml",
   favicon: "img/favicon.ico",
 
@@ -20,7 +20,7 @@ const config = {
   },
 
   // Set the production url of your site here
-  url: "https://your-docusaurus-site.example.com",
+  url: "https://advent-of-hardcaml-2025.vercel.app/",
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
   baseUrl: "/",
@@ -83,7 +83,7 @@ const config = {
         respectPrefersColorScheme: true,
       },
       navbar: {
-        title: "My Site",
+        title: "Advent of Hardcaml 2025",
         logo: {
           alt: "My Site Logo",
           src: "img/logo.svg",
