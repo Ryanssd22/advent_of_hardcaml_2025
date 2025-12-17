@@ -1,4 +1,4 @@
-# Day 0 - Initializing OCaml
+# Day 1 - Initializing OCaml
 
 <img src={require('/assets/ocamlmeme.jpg').default} alt="OCaml meme" width="400px" />
 
@@ -120,3 +120,19 @@ From here, I'd recommend writing a quick little program inside `bin/main.ml`.
 There's bunch of tutorials to learn out there, so find one you like.
 
 Or use AI, I ain't your dad.
+
+Here's a little [fibonacci sequence](https://www.literateprograms.org/fibonacci_numbers__ocaml_.html) in OCaml using recursion:
+
+```jsx title="./bin/main.ml"
+let rec fibonacci a b n =
+  Printf.printf "Solving: %d\n" n;
+  match n with
+  | 0 -> a
+  | 1 -> b
+  | n when n > 1 -> fibonacci b (a+b) (n-1)
+  | _ -> raise (Invalid_argument "Fibonacci numbers only defined when k >= 0")
+
+let () =
+  let result = fibonacci 0 1 5000 in
+  Printf.printf "Fibonacci result: %d\n" result
+```
