@@ -15,6 +15,8 @@ This challenge is hosted by [Jane Street](https://blog.janestreet.com/advent-of-
 
 [Advent of Code](https://adventofcode.com/), created by [Eric Wastl](https://was.tl/) is a yearly series of puzzles set during the season of Advent.
 
+There are typically 25 puzzles for each year, but for 2025, there are only 12.
+
 ## Hardcaml
 
 [Hardcaml](https://github.com/janestreet/hardcaml) is a library for OCaml that facilitates the creation and simulation of hardware designs.
@@ -24,7 +26,10 @@ Thankfully, they have one of their guys actively participating in this challenge
 
 ## My Grindset
 
-Since I don't have much planned over this Christmas break,
+Since I don't have much planned over this Christmas break, and I want to make sure my brain doesn't rot,
+my plan is to learn of all these things in a month.
+
+Realistic? Not sure.
 
 Using this website, I'll try to document what I've researched.
 Hopefully, by the end of this challenge, you too could learn a thing or two about hardware design.
