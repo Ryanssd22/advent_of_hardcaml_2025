@@ -4,7 +4,7 @@
 
 :::note
 
-OCaml stands for "Overly cryptic and mentally laborious"
+OCaml stands for "oh, caml"
 
 :::
 

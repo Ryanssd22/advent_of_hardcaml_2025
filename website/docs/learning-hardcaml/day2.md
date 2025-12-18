@@ -30,8 +30,37 @@ Make sure it is in `/bin/dune`. Don't make my mistake :(
  (preprocess (pps ppx_jane ppx_hardcaml)))
 ```
 
-## Hardcaml Bits
+## Hardcaml Bits and Arithmetic
 
 :::note
 I will be assuming that you have a good grasp on binary. If you do not, read a book.
 :::
+
+Here are some examples of using Hardcaml to perform binary arithmetic!
+
+```ocaml title="/bin/main.ml"
+open Hardcaml.Signal
+
+let () =
+  (* String to signed int *)
+  let x = of_string "11001001" in
+  let y = to_sint x in
+  Printf.printf "String to int: %d\n" y;
+  Printf.printf "Width of bits: %d\n" (width x);
+
+  (* Int to bits *)
+  let x = of_int ~width:10 (-2) in
+  Printf.printf "Int to bits: %s\n" (to_string x);
+
+  (* Addition *)
+  let x = of_int ~width:5 (10) in
+  let y = of_int ~width:5 (3) in
+  let sum = x +: y in
+  Printf.printf "SUM:\n%s + %s = %s\n" (to_string x) (to_string y) (to_string sum);
+
+  (* Subtraction *)
+  let x = of_int ~width:5 (12) in
+  let y = of_int ~width:5 (-3) in
+  let difference = x -: y in
+  Printf.printf "DIFFERENCE:\n%s - %s = %s\n" (to_string x) (to_string y) (to_string difference);
+```
