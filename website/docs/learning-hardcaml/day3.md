@@ -192,6 +192,15 @@ let b = Signal.to_int ~width:4 5 in
   </TabItem>
 </Tabs>
 
+:::warning
+FYI, these are "infix operators," so the `Hardcaml.Signal` module must be open to
+use them. You can either:
+
+1. Use `open Hardcaml.Signal` at the beginning of your project
+2. Open it locally via `let open Signal in`
+3. Use it inline like: `Signal.(a +: b)`
+   :::
+
 ## Wires
 
 Here's what's separates real, chud reconfiguration from your typical programmer.
@@ -202,8 +211,8 @@ by where we actually route our **Wires**
 Hardcaml uses an example of a **Graph**, where our logic are the **Verticies** and
 wires are the **Edges**. (Helps if you're a graph theory guy)
 
-Also this is mostly conceptual, as Hardcaml kinda abstracts wires away anyways. You're
-still able to define wires, but as they themselves put it:
+I hope you're wrapping your mind around this; don't worry, even the Hardcaml guys
+themselves put it:
 
 > [Wires] logically do nothing
 
@@ -214,7 +223,7 @@ make it pass through some **logic**, and deliver us a fresh, steaming **output**
 
 ### Defining out inputs
 
-In Hardcaml, our inputs will be a default signal with a given width. We are able to
+In Hardcaml, our inputs will be a **wire** with a given width. We are able to
 define them as such:
 
 ```ocaml title="/bin/circuit.ml"
@@ -222,10 +231,19 @@ let input_a = input "a" 8 in
 let input_b = input "b" 8 in
 ```
 
-Here, we created two input signals, one named `"a"` and the other `"b"`. They both have
+Here, we created two input wires, one named `"a"` and the other `"b"`. They both have
 a width of `8` bits.
 
-### Defining out outputs
+### Defining our outputs
+
+Next, we'll define our output wires in relation to some inputs and logic:
+
+```ocaml titl="/bin/circuit.ml"
+let output_c = output "c" (input_a +: input_b) in
+```
+
+Notice how `output_c` is defined ONLY by other signals, meaning that even its width
+is derived from the widths of our inpts. Thus, the width of `output_c` is also `8`.
 
 ### Creating our circuit
 
