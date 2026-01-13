@@ -205,7 +205,7 @@ use them. You can either:
 
 ## Wires
 
-Here's what's separates real, chud reconfiguration from your typical programmer.
+Here's what's separates real reconfigurators from your typical programmer.
 Reconfiguration is all about describing the _flow of logic_, meaning we aren't
 actually dealing with hard and fast values like **Signals** alone. Our logic is dicatated
 by where we actually route our **Wires**
@@ -248,6 +248,46 @@ Notice how `output_c` is defined ONLY by other signals, meaning that even its wi
 is derived from the widths of our inpts. Thus, the width of `output_c` is also `8`.
 
 ### Creating our circuit
+
+Now that we've defined our inputs and our outputs, we are able to define our **circuit**!
+
+Using `Circuit.create_exn`, we are able to encode our RTL (hardware) logic into a hardcaml variable:
+
+```ocaml title="/bin/circuit.ml"
+let circuit = Circuit.create_exn ~name:"My Circuit" [ output_c ]
+```
+
+:::note
+See, as we are creating our circuit, it is only defined by our outputs, not our inputs.
+This is because our inputs are already inherently defined in our output!
+:::
+
+### Turning our circuit into VHDL or Verilog
+
+Of course, VHDL and Verilog are your prime RTL languages (I haven't met anyone who knows Hardcaml, or even OCaml for that matter).
+Now that we've created our circuit, we are able to convert it to VHDL and Verilog using `Rtl.print`!
+
+```ocaml title="/bin/circuit.ml"
+Rtl.print Verilog Circuit
+```
+
+## Simulating our circuit
+
+That's good and all, but creating our logic is only half the battle. The other half is **verification**!
+Thus, our next job is to simulate our circuit, meaning we give it some inputs and verify its outputs.
+
+Using the same circuit, let's create a simulator:
+
+```ocaml title="bin/circuit.ml"
+let (simulator : _ Cyclesim.t) = Cyclesim.create circuit
+```
+
+And let's create the input signals that we are going to simulate:
+
+```ocaml title="bin/circuit.ml"
+let a = Cyclesim.in_port simulator "a"
+let b = Cyclesim.in_port simulator "b"
+```
 
 ## Good resources
 
