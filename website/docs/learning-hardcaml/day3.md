@@ -3,6 +3,8 @@ import TabItem from '@theme/TabItem';
 
 # Day 3 - Understanding FPGA architecture
 
+<img src={require('/assets/hardcaml_internals.jpg').default} alt="OCaml meme" width="400px" />
+
 :::note
 FPGA stands for **Field Programmable Gate Array**
 :::
