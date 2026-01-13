@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Day 3 - Understanding FPGA architecture
+# Day 3 - Creating Hardcaml Circuits
 
 <img src={require('/assets/hardcaml_internals.jpg').default} alt="OCaml meme" width="400px" />
 
@@ -228,7 +228,7 @@ make it pass through some **logic**, and deliver us a fresh, steaming **output**
 In Hardcaml, our inputs will be a **wire** with a given width. We are able to
 define them as such:
 
-```ocaml title="/bin/circuit.ml"
+```ocaml title="/bin/circuit_sim.ml"
 let input_a = input "a" 8 in
 let input_b = input "b" 8 in
 ```
@@ -240,12 +240,14 @@ a width of `8` bits.
 
 Next, we'll define our output wires in relation to some inputs and logic:
 
-```ocaml titl="/bin/circuit.ml"
+```ocaml titl="/bin/circuit_sim.ml"
 let output_c = output "c" (input_a +: input_b) in
+let output_d = output "d" (input_a *: input_b) in
 ```
 
 Notice how `output_c` is defined ONLY by other signals, meaning that even its width
-is derived from the widths of our inpts. Thus, the width of `output_c` is also `8`.
+is derived from the widths of our inpts. Thus, the width of `output_c` is `8`, and `output_d`
+`16`.
 
 ### Creating our circuit
 
@@ -253,8 +255,8 @@ Now that we've defined our inputs and our outputs, we are able to define our **c
 
 Using `Circuit.create_exn`, we are able to encode our RTL (hardware) logic into a hardcaml variable:
 
-```ocaml title="/bin/circuit.ml"
-let circuit = Circuit.create_exn ~name:"My Circuit" [ output_c ]
+```ocaml title="/bin/circuit_sim.ml"
+let circuit = Circuit.create_exn ~name:"My_Circuit" [ output_c; output_d ] in
 ```
 
 :::note
@@ -267,9 +269,79 @@ This is because our inputs are already inherently defined in our output!
 Of course, VHDL and Verilog are your prime RTL languages (I haven't met anyone who knows Hardcaml, or even OCaml for that matter).
 Now that we've created our circuit, we are able to convert it to VHDL and Verilog using `Rtl.print`!
 
-```ocaml title="/bin/circuit.ml"
-Rtl.print Verilog Circuit
+```ocaml title="/bin/circuit_sim.ml"
+Rtl.print Verilog circuit;
+Rtl.print Vhdl circuit
 ```
+
+And here is what it outputs:
+
+```verilog title="Verilog"
+module My_Circuit (
+    b,
+    a,
+    c,
+    d
+);
+
+    input [7:0] b;
+    input [7:0] a;
+    output [7:0] c;
+    output [15:0] d;
+
+    wire [15:0] _5;
+    wire [7:0] _6;
+    assign _5 = a * b;
+    assign _6 = a + b;
+    assign c = _6;
+    assign d = _5;
+
+endmodule
+```
+
+```vhdl title="VHDL"
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity My_Circuit is
+    port (
+        b : in std_logic_vector(7 downto 0);
+        a : in std_logic_vector(7 downto 0);
+        c : out std_logic_vector(7 downto 0);
+        d : out std_logic_vector(15 downto 0)
+    );
+end entity;
+
+architecture rtl of My_Circuit is
+
+    -- conversion functions
+    function hc_uns(a : std_logic)        return unsigned         is variable b : unsigned(0 downto 0); begin b(0) := a; return b; end;
+    function hc_uns(a : std_logic_vector) return unsigned         is begin return unsigned(a); end;
+    function hc_sgn(a : std_logic)        return signed           is variable b : signed(0 downto 0); begin b(0) := a; return b; end;
+    function hc_sgn(a : std_logic_vector) return signed           is begin return signed(a); end;
+    function hc_sl (a : std_logic_vector) return std_logic        is begin return a(a'right); end;
+    function hc_sl (a : unsigned)         return std_logic        is begin return a(a'right); end;
+    function hc_sl (a : signed)           return std_logic        is begin return a(a'right); end;
+    function hc_sl (a : boolean)          return std_logic        is begin if a then return '1'; else return '0'; end if; end;
+    function hc_slv(a : std_logic_vector) return std_logic_vector is begin return a; end;
+    function hc_slv(a : unsigned)         return std_logic_vector is begin return std_logic_vector(a); end;
+    function hc_slv(a : signed)           return std_logic_vector is begin return std_logic_vector(a); end;
+    signal hc_5 : std_logic_vector(15 downto 0);
+    signal hc_6 : std_logic_vector(7 downto 0);
+
+begin
+
+    hc_5 <= hc_slv(hc_uns(a) * hc_uns(b));
+    hc_6 <= hc_slv(hc_uns(a) + hc_uns(b));
+    c <= hc_6;
+    d <= hc_5;
+
+end architecture;
+```
+
+Analyzing these programs show us that it successfully created our circuit with our
+two outputs!
 
 ## Simulating our circuit
 
@@ -278,17 +350,278 @@ Thus, our next job is to simulate our circuit, meaning we give it some inputs an
 
 Using the same circuit, let's create a simulator:
 
-```ocaml title="bin/circuit.ml"
-let (simulator : _ Cyclesim.t) = Cyclesim.create circuit
+```ocaml title="bin/circuit_sim.ml"
+let simulator = Cyclesim.create circuit in
 ```
 
-And let's create the input signals that we are going to simulate:
+And let's create the input and output signals that we are going to simulate:
 
-```ocaml title="bin/circuit.ml"
-let a = Cyclesim.in_port simulator "a"
-let b = Cyclesim.in_port simulator "b"
+```ocaml title="bin/circuit_sim.ml"
+let a_in = Cyclesim.in_port simulator "a" in
+let b_in = Cyclesim.in_port simulator "b" in
+let c_out = Cyclesim.out_port simulator "c" in
+let d_out = Cyclesim.out_port simulator "d" in
 ```
+
+### Creating our testbench
+
+In order to actually test our circuit, we'll add some actual numbers to our inputs
+and see if they correctly add and multiply those numbers. The inputs are set as such:
+
+```ocaml title="bin/circuit_sim.ml"
+a_in := Bits.of_string "10100011";
+b_in := Bits.of_string "00101100";
+```
+
+Now that we've set the inputs, we'll have to run the simulation a time step with this command.
+
+```ocaml title="bin/circuit_sim.ml"
+Cyclesim.cycle simulator;
+```
+
+Now that the simulator has run, we can check to see what our variables `c_out` and `d_out` equal!
+Remember, all the `Cyclesim` ports we created are references to `Bits.t`, so that's why we'll include the `!`
+before the variable.
+
+```ocaml title="bin/circuit_sim.ml"
+Printf.printf "a: %s\n" (Bits.to_string !a_in);
+Printf.printf "b: %s\n" (Bits.to_string !b_in);
+Printf.printf "c: %s\tWidth: %d\n" (Bits.to_string !c_out) (Bits.width !c_out);
+Printf.printf "c: %s\tWidth: %d\n" (Bits.to_string !d_out) (Bits.width !d_out);
+```
+
+```ocaml title="Output"
+a: 10100011
+b: 00101100
+c: 11001111     Width: 8
+c: 0001110000000100     Width: 16
+```
+
+:::info
+Do the math and see if this is correct!
+:::
+
+### Creating a waveform
+
+Hardcaml can create a pretty epic waveform graph of our simulation using `hardcaml_waveterm`.
+In order to use it, be sure to include the module:
+
+- Add `open Hardcaml_waveterm` to the beginning of your file
+- Add `hardcaml_waveterm` to your libraries in your `dune` file
+
+Let's take our old simulation again and change a few things:
+
+```ocaml title="bin/circuit_sim.ml"
+(* Creating circuit sim *)
+let simulator = Cyclesim.create circuit in
+
+(* Creating waveform *)
+let waves, simulator = Waveform.create simulator in
+
+(* Creating simulator ports *)
+let a_in = Cyclesim.in_port simulator "a" in
+let b_in = Cyclesim.in_port simulator "b" in
+
+(* !!! When using the waveform simulator, you don't need to create output ports! *)
+(* let c_out = Cyclesim.out_port simulator "c" in *)
+(* let d_out = Cyclesim.out_port simulator "d" in *)
+
+(* Running circuit sim *)
+a_in := Bits.of_string "10100011";
+b_in := Bits.of_string "00101100";
+Cyclesim.cycle simulator;
+
+a_in := Bits.of_string "00000001";
+b_in := Bits.of_string "01000100";
+Cyclesim.cycle simulator;
+
+
+(* Print waveform *)
+Waveform.print ~display_height:18 waves
+```
+
+Notice our changes:
+
+1. Initialized our waveform using `Waveform.create`
+2. Commented out our output ports
+3. Added another simulation step
+4. Printed waveform with `Waveform.print`
+
+And now, our beautiful output:
+
+```ocaml title="Output"
+┌Signals────────┐┌Waves──────────────────────────────────────────────┐
+│               ││────────┬───────                                   │
+│a              ││ A3     │01                                        │
+│               ││────────┴───────                                   │
+│               ││────────┬───────                                   │
+│b              ││ 2C     │44                                        │
+│               ││────────┴───────                                   │
+│               ││────────┬───────                                   │
+│c              ││ CF     │45                                        │
+│               ││────────┴───────                                   │
+│               ││────────┬───────                                   │
+│d              ││ 1C04   │0044                                      │
+│               ││────────┴───────                                   │
+└───────────────┘└───────────────────────────────────────────────────┘
+```
+
+## Circuit convention
+
+Let's organize our code a little bit and make it more _professional_
+and _conventional_, and even more, _type safe_!
+
+Instead of listing out our inputs and outputs one by one, we can use
+**`modules`**. Let's apply them to our current circuit.
+
+```ocaml title="bin/circuit_sim_conventional.ml"
+(* Inputs *)
+module I = struct
+  type 'a t =
+    { input_a : 'a[@bits 8]
+    ; input_b : 'a[@bits 8]
+    }
+  [@@deriving hardcaml]
+end
+
+(* Outputs *)
+module O = struct
+  type 'a t =
+    { output_c : 'a[@bits 8]
+    ; ouput_d : 'a[@bits 16]
+    }
+  [@@deriving hardcaml]
+end
+```
+
+Now we've strictly defined both our inputs and our outputs! Next, create a **`create`** function:
+
+```ocaml title="bin/circuit_sim_conventional.ml"
+(* Creating circuit logic *)
+let create (i : _ I.t) =
+  { O.output_c = i.input_a +: i.input_b
+  ; output_d = i.input_a *: i.input_b
+  }
+```
+
+In our main function, we will use the special **`Circuit.With_interface(I)(O)`** to define a circuit module with
+our corresponding inputs and outputs:
+
+```ocaml title="bin/circuit_sim_conventional.ml"
+let () =
+  (* Creating circuit *)
+  let module My_Circuit = Circuit.With_interface(I)(O) in
+  let circuit = My_Circuit.create_exn ~name:"My_Circuit" create in
+
+  (* Printing Verilog *)
+  Rtl.print Verilog circuit;
+```
+
+Then, use **`Cyclesim.With_interface(I)(O)`** to define a simulator, where you can gather
+all the inputs and outputs with just one function call:
+
+```ocaml title="bin/circuit_sim_conventional.ml"
+(* Creating circuit sim *)
+let module Simulator = Cyclesim.With_interface(I)(O) in
+let sim = Simulator.create create in
+
+(* Creating waveform *)
+let waves, simulator = Waveform.create sim in
+
+(* Creating simulator ports *)
+let inputs : _ I.t = Cyclesim.inputs sim in
+
+(* Running circuit sim *)
+inputs.input_a := Bits.of_string "10100011";
+inputs.input_b := Bits.of_string "00101100";
+Cyclesim.cycle simulator;
+inputs.input_a := Bits.of_string "00000001";
+inputs.input_b := Bits.of_string "01000100";
+Cyclesim.cycle simulator;
+
+(* Print waveform *)
+Waveform.print ~display_height:14 waves
+```
+
+Notice the new way we get our inputs with **`Cyclesim.inputs`**.
+Our entire file should look like this:
+
+```ocaml title="bin/circuit_sim_conventional.ml"
+open Hardcaml
+open Hardcaml.Signal
+open Hardcaml_waveterm
+
+(* Inputs *)
+module I = struct
+  type 'a t =
+    { input_a : 'a[@bits 8]
+    ; input_b : 'a[@bits 8]
+    }
+  [@@deriving hardcaml]
+end
+
+(* Outputs *)
+module O = struct
+  type 'a t =
+    { output_c : 'a[@bits 8]
+    ; output_d : 'a[@bits 16]
+    }
+  [@@deriving hardcaml]
+end
+
+(* Creating circuit logic *)
+let create (i : _ I.t) =
+  { O.output_c = i.input_a +: i.input_b
+  ; output_d = i.input_a *: i.input_b
+  }
+
+let () =
+  (* Creating circuit *)
+  let module My_Circuit = Circuit.With_interface(I)(O) in
+  let circuit = My_Circuit.create_exn ~name:"My_Circuit" create in
+
+  (* Printing Verilog *)
+  Rtl.print Verilog circuit;
+
+  (* Creating circuit sim *)
+  let module Simulator = Cyclesim.With_interface(I)(O) in
+  let sim = Simulator.create create in
+
+  (* Creating waveform *)
+  let waves, simulator = Waveform.create sim in
+
+  (* Creating simulator ports *)
+  let inputs : _ I.t = Cyclesim.inputs sim in
+
+  (* Running circuit sim *)
+  inputs.input_a := Bits.of_string "10100011";
+  inputs.input_b := Bits.of_string "00101100";
+  Cyclesim.cycle simulator;
+  inputs.input_a := Bits.of_string "00000001";
+  inputs.input_b := Bits.of_string "01000100";
+  Cyclesim.cycle simulator;
+
+  (* Print waveform *)
+  Waveform.print ~display_height:14 waves
+```
+
+I know it's more boilerplate, but look at that, our **Inputs**, **Outputs**, and **RTL Logic** are
+all in their own organized modules! When we scale this up, our code will stay organized.
+
+:::note
+Learn more in [5.4 - Module Interfaces](https://github.com/janestreet/hardcaml/blob/master/docs/module_interface.md)
+:::
+
+## What now?
+
+Awesome! Now we have something tangible to play around with. The problem, though, is that
+all of this is **combinational**, meaning it has no **states**. How am I supposed to solve complex
+_Advent of Code_ problems with this? Tomorrow, we'll go through Hardcaml's **Sequential** logic!
 
 ## Good resources
 
+- [circuit_sim.ml]()
+- [circuit_sim_conventional.ml]()
 - [Hardcaml Docs - 2.1 Combinational Logic](https://github.com/janestreet/hardcaml/blob/master/docs/combinational_logic.md)
+- [Hardcaml Docs - 2.3 Circuits](https://github.com/janestreet/hardcaml/blob/master/docs/combinational_logic.md)
+- [Hardcaml Docs - 3.2 Waveforms](https://github.com/janestreet/hardcaml/blob/master/docs/waveforms.md)
