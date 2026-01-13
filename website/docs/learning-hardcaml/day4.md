@@ -113,3 +113,44 @@ a step.
 
 `Cyclesim.cycle` automatically goes through a clock cycle for you, how convenient!
 :::
+
+## States and `Always` DSL
+
+- _[4.3 - Designing State Machines](https://github.com/janestreet/hardcaml/blob/master/docs/state_machine_always_api.md)_
+
+Let's create a more advanced circuit, with different **states** which define what our circuit
+does depending on an input.
+
+Fortunately, Hardcaml gifts us with [`Always` DSL](https://ocaml.org/p/hardcaml/latest/doc/hardcaml/Hardcaml/Always/index.html),
+which allows us to create our circuit using variables, `if_` statements, and `switch` statements.
+These are very useful for someone "software brained." But nobody likes these software people, so we'll
+create a hardware staple: An **ALU**
+
+### What is an ALU?
+
+An ALU is an **Arithmitic Logic Unit**, it performs arithmetic and logical operations on registers. They are as follows:
+
+1. Add/Subtract
+2. Multiply/Divide
+3. Logical Shifts Left/Right
+4. And/or/not
+
+Let's stick with the first 3 in the list, so `6` states will be used for each of these operations.
+
+### Initializing Inputs, Outputs, and States
+
+We'll make this ALU deal with 4-bit inputs:
+
+```ocaml title="bin/alu.ml"
+
+```
+
+Now introducing our states module:
+
+```ocaml title="bin/alu.ml"
+
+```
+
+### Implementing `Always`
+
+`Always.compile` returns our needed output ports, so we can use it with `Circuit.create_exn`.
