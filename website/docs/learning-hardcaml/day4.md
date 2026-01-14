@@ -4,7 +4,8 @@
 
 So we've created **Circuits**, but they are only combinational, meaning that the outputs
 are determined by the current inputs. That's great when we want to make a simple calculator,
-but real, awesome computation happens in states and sequences.
+but real, awesome computation happens in states and sequences. The computer revolution is built on malleable
+logic!
 
 This is where we introduce the sequential powerhouse tool: **REGISTERS**
 
