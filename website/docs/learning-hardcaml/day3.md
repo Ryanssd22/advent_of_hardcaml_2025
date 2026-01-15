@@ -1,7 +1,7 @@
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# Day 3 - Creating Hardcaml Circuits
+# Creating Hardcaml Circuits
 
 <img src={require('/assets/hardcaml_internals.jpg').default} alt="OCaml meme" width="400px" />
 

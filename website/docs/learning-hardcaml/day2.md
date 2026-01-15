@@ -1,4 +1,4 @@
-# Day 2 - Initializing Hardcaml
+# Initializing Hardcaml
 
 <img src={require('/assets/hardcamlcrack.jpg').default} alt="OCaml meme" width="400px" />
 
@@ -15,6 +15,8 @@ This is the easiest part.
 ```
 opam install hardcaml hardcaml_waveterm ppx_hardcaml
 ```
+
+Grab yourself a sandwich while it downloads all **520** packages.
 
 Next, you want to add the required dependencies to your dune project.
 

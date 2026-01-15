@@ -1,4 +1,4 @@
-# Day 1 - Initializing OCaml
+# Initializing OCaml
 
 <img src={require('/assets/ocamlmeme.jpg').default} alt="OCaml meme" width="400px" />
 
@@ -43,7 +43,7 @@ bash -c "sh <(curl -fsSL https://OPAM.ocaml.org/install.sh)"
 Create an **OPAM switch**, which is a type of environment. Think Python's virtual environments.
 
 ```bash
-opam init
+opam init -y
 ```
 
 ### 3. Activate OPAM switch

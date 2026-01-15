@@ -27,7 +27,7 @@ Thankfully, they have one of their guys actively participating in this challenge
 ## My Grindset
 
 Since I don't have much planned over this Christmas break, and I want to make sure my brain doesn't rot,
-my plan is to learn of all these things in a month.
+my plan is to learn of all these things in a week or so.
 
 Realistic? Not sure.
 

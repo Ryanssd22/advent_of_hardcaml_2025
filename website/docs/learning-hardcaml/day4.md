@@ -1,4 +1,4 @@
-# Day 4 - Hardcaml Sequential Logic
+# Hardcaml Sequential Logic
 
 <img src={require('/assets/flipflop.jpeg').default} alt="OCaml meme" width="400px" />
 
@@ -32,6 +32,7 @@ module I = struct
   type 'a t =
     { clock : 'a
     ; clear : 'a
+    ; data_in : 'a[@bits 4]
     }
   [@@deriving hardcaml]
 end
@@ -39,7 +40,7 @@ end
 (* Outputs *)
 module O = struct
   type 'a t =
-    { data_out : 'a[@bits 8]
+    { data_out : 'a[@bits 4]
     }
   [@@deriving hardcaml]
 end
