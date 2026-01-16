@@ -1,5 +1,5 @@
 open Hardcaml
-module Sol = Day01part1
+module Sol = Day01
 
 (* Puzzle input file path - Feel free to change *)
 let filename = "day01/inputs/puzzle.txt"
@@ -58,4 +58,6 @@ let () =
   Stdio.printf "Initial state:%d\n" (Bits.to_int !(outputs.state));
   Cyclesim.cycle sim;
   List.iter send_data data;
+  
+  Stdio.printf "\npart1:%d\npart2:%d\n" (Bits.to_int !(outputs.count_a)) (Bits.to_int !(outputs.count_b));
 
