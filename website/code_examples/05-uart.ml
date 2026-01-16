@@ -41,7 +41,7 @@ let create (i : _ I.t) =
 
   Always.(compile [
     state_machine.switch [
-      (* Waits for starting bit *)
+      (* Waits for starting signal*)
       Idle, [
         tx_reg <-- vdd;
         if_ (i.start ==: vdd) [
@@ -49,13 +49,14 @@ let create (i : _ I.t) =
         ] [];
       ];
 
-      (* Sends start bit *)
+      (* Sends start signal *)
       Start, [
         tx_reg <-- gnd;
         bit_index <-- Signal.zero 2;
         state_machine.set_next Data;
       ];
 
+      (* Sends data one bit at a time *)
       Data, [
         tx_reg <-- mux bit_index.value (bits_lsb i.data_in);
 
@@ -66,6 +67,7 @@ let create (i : _ I.t) =
         ];
       ];
 
+      (* Sends ending signal *)
       Stop, [
         tx_reg <-- vdd;
         state_machine.set_next Idle;
