@@ -34,10 +34,9 @@ end
 (* RTL Logic *)
 let create (i : _ I.t) =
   let reg_spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
-  let tx_spec = Reg_spec.create ~clock:i.clock ~clear:i.clear () in
   let state_machine = Always.State_machine.create (module States) ~enable:vdd reg_spec in
 
-  let tx_reg = Always.Variable.reg tx_spec ~width:1 in
+  let tx_reg = Always.Variable.reg reg_spec ~width:1 in
   let bit_index = Always.Variable.reg reg_spec ~width:2 in
 
   Always.(compile [
