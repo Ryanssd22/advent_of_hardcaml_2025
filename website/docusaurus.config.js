@@ -85,8 +85,8 @@ const config = {
       navbar: {
         title: "Advent of Hardcaml 2025",
         logo: {
-          alt: "My Site Logo",
-          src: "img/logo.svg",
+          alt: "Ocaml Logo",
+          src: "img/ocaml_logo.png",
         },
         items: [
           {
