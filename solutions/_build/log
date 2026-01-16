@@ -1,0 +1,6 @@
+# dune init proj solutions
+# OCAMLPARAM: unset
+# Shared cache: enabled-except-user-rules
+# Shared cache location: /home/ryan/.cache/dune/db
+# Workspace root: /home/ryan/hardcaml/advent_of_hardcaml_2025/solutions
+# Auto-detected concurrency: 12
