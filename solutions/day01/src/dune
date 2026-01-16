@@ -1,0 +1,4 @@
+(library
+  (name day01part1)
+  (libraries base core hardcaml hardcaml_circuits)
+  (preprocess (pps ppx_jane ppx_hardcaml)))
